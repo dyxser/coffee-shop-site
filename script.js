@@ -1,452 +1,370 @@
-// --- 1. Работа с корзиной ---
+'use strict';
+
+/* ============================================================
+   1. КОНСТАНТЫ И ДАННЫЕ МЕНЮ
+   ============================================================ */
+
+const CART_KEY = 'my-coffee-cart';
+
+const coffees = [
+  {
+    name: 'Эспрессо',
+    type: 'hot',
+    variants: [
+      { size: 'маленький', price: 150, image: 'images/espresso.jpg' },
+      { size: 'большой', price: 220, image: 'images/espressoBig.jpg' },
+    ],
+  },
+  {
+    name: 'Капучино',
+    type: 'hot',
+    variants: [
+      { size: 'маленький', price: 200, image: 'images/kapuch.jpg' },
+      { size: 'средний', price: 240, image: 'images/kapuchmedl.jpg' },
+      { size: 'большой', price: 280, image: 'images/kapuchbig.jpg' },
+    ],
+  },
+  {
+    name: 'Латте',
+    type: 'hot',
+    variants: [
+      { size: 'маленький', price: 220, image: 'images/latte.jpg' },
+      { size: 'большой', price: 300, image: 'images/latteBig.jpg' },
+    ],
+  },
+  {
+    name: 'Айс Латте',
+    type: 'iced',
+    variants: [{ size: 'средний', price: 270, image: 'images/latteIce.jpg' }],
+  },
+  {
+    name: 'Айс Капучино',
+    type: 'iced',
+    variants: [{ size: 'средний', price: 280, image: 'images/kapuchIce.jpg' }],
+  },
+];
+
+let currentFilter = 'all';
+
+/* ============================================================
+   2. ХРАНИЛИЩЕ КОРЗИНЫ (localStorage)
+   ============================================================ */
+
 function loadCart() {
   try {
-    const saved = localStorage.getItem('my-coffee-cart');
-    if (!saved) return [];
-    return JSON.parse(saved);
+    const saved = localStorage.getItem(CART_KEY);
+    return saved ? JSON.parse(saved) : [];
   } catch (e) {
     console.error('Ошибка чтения корзины:', e);
-    alert('Данные корзины повреждены. Она будет очищена.');
-    localStorage.removeItem('my-coffee-cart');
+    localStorage.removeItem(CART_KEY);
     return [];
   }
 }
 
 function saveCart() {
   try {
-    localStorage.setItem('my-coffee-cart', JSON.stringify(cart));
+    localStorage.setItem(CART_KEY, JSON.stringify(cart));
   } catch (e) {
     console.error('Ошибка сохранения корзины:', e);
   }
 }
 
-// --- 2. Данные о кофе ---
-const coffees = [
-  {
-    name: "Эспрессо",
-    type: "hot",
-    variants: [
-      { size: "маленький", price: 150, image: "images/espresso.jpg" },
-      { size: "большой", price: 220, image: "images/espressoBig.jpg" }
-    ]
-  },
-  {
-    name: "Капучино",
-    type: "hot",
-    variants: [
-      { size: "маленький", price: 200, image: "images/kapuch.jpg" },
-      { size: "средний", price: 240, image: "images/kapuchmedl.jpg" },
-      { size: "большой", price: 280, image: "images/kapuchbig.jpg" }
-    ]
-  },
-  {
-    name: "Латте",
-    type: "hot",
-    variants: [
-      { size: "маленький", price: 220, image: "images/latte.jpg" },
-      { size: "большой", price: 300, image: "images/latteBig.jpg" }
-    ]
-  },
-  {
-    name: "Айс Латте",
-    type: "iced",
-    variants: [
-      { size: "средний", price: 270, image: "images/latteIce.jpg" }
-    ]
-  },
-  {
-    name: "Айс Капучино",
-    type: "iced",
-    variants: [
-      { size: "средний", price: 280, image: "images/kapuchIce.jpg" }
-    ]
-  }
-];
-
-// --- 3. Инициализация ---
 let cart = loadCart();
-console.log('Корзина при старте:', cart);
 
-// --- Новая функция: изменить количество товара ---
-function changeQuantity(index, delta) {
-  const item = cart[index];
-  if (!item) return;
+/* ============================================================
+   3. ЛОГИКА КОРЗИНЫ (изменение данных)
+   ============================================================ */
 
-  const newQty = (item.quantity || 1) + delta;
+function getQty(item) {
+  return item.quantity || 1;
+}
 
-  if (newQty < 1) {
-    cart.splice(index, 1);
-  } else if (newQty > 10) {
-    return; 
-  }else {
-    item.quantity = newQty;
+function getTotalCount() {
+  return cart.reduce((sum, item) => sum + getQty(item), 0);
+}
+
+function getTotalPrice() {
+  return cart.reduce((sum, item) => sum + item.price * getQty(item), 0);
+}
+
+function addToCart(coffee, variant) {
+  const existing = cart.find(
+    (item) => item.name === coffee.name && item.size === variant.size
+  );
+  if (existing) {
+    existing.quantity += 1;
+  } else {
+    cart.push({
+      name: coffee.name,
+      size: variant.size,
+      price: variant.price,
+      image: variant.image,
+      quantity: 1,
+    });
   }
-
   saveCart();
   updateCartUI();
 }
 
-// --- Обновлённая отрисовка корзины (с кнопками +/-) ---
+function changeQuantity(index, delta) {
+  const item = cart[index];
+  if (!item) return;
+
+  const newQty = getQty(item) + delta;
+  if (newQty < 1) {
+    cart.splice(index, 1);
+  } else if (newQty > 10) {
+    return;
+  } else {
+    item.quantity = newQty;
+  }
+  saveCart();
+  updateCartUI();
+}
+
+function removeItem(index) {
+  cart.splice(index, 1);
+  saveCart();
+  updateCartUI();
+}
+
+function clearCart() {
+  cart = [];
+  saveCart();
+  updateCartUI();
+}
+
+/* ============================================================
+   4. ОТРИСОВКА КОРЗИНЫ
+   ============================================================ */
+
+function createCartRow(item, index) {
+  const row = document.createElement('div');
+  row.className = 'cart-item-row';
+
+  const img = document.createElement('img');
+  img.className = 'cart-item-img';
+  img.src = item.image;
+  img.alt = item.name;
+
+  const info = document.createElement('div');
+  info.className = 'cart-item-info';
+  info.textContent = `${item.name} (${item.size}) — ${item.price} ₽`;
+
+  const qtyBlock = document.createElement('div');
+  qtyBlock.className = 'qty-block';
+
+  const minusBtn = document.createElement('button');
+  minusBtn.className = 'qty-btn qty-minus';
+  minusBtn.textContent = '−';
+  minusBtn.addEventListener('click', () => changeQuantity(index, -1));
+
+  const qtyDisplay = document.createElement('span');
+  qtyDisplay.className = 'qty-display';
+  qtyDisplay.textContent = getQty(item);
+
+  const plusBtn = document.createElement('button');
+  plusBtn.className = 'qty-btn qty-plus';
+  plusBtn.textContent = '+';
+  plusBtn.addEventListener('click', () => changeQuantity(index, +1));
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.className = 'delete-btn';
+  deleteBtn.textContent = 'Удалить';
+  deleteBtn.addEventListener('click', () => removeItem(index));
+
+  qtyBlock.append(minusBtn, qtyDisplay, plusBtn);
+  row.append(img, info, qtyBlock, deleteBtn);
+  return row;
+}
+
 function updateCartUI() {
   const countEl = document.getElementById('cart-count');
   const totalEl = document.getElementById('cart-total');
-  const itemsList = document.getElementById('cart-items-list');
   const modalTotalEl = document.getElementById('cart-total-modal');
+  const itemsList = document.getElementById('cart-items-list');
 
-
-  const totalCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
-  const totalPrice = cart.reduce((sum, item) => {
-    const qty = item.quantity || 1;
-    return sum + (item.price * qty);
-  }, 0);
+  const totalCount = getTotalCount();
+  const totalPrice = getTotalPrice();
 
   if (countEl) countEl.textContent = totalCount;
   if (totalEl) totalEl.textContent = `${totalPrice} ₽`;
   if (modalTotalEl) modalTotalEl.textContent = `${totalPrice} ₽`;
 
   if (!itemsList) return;
-  itemsList.innerHTML = '';
 
-  if (totalCount === 0) {
-    itemsList.style.display = 'none';
-    return;
-  } else {
-    itemsList.style.display = 'block';
-  }
+  itemsList.innerHTML = '';
+  itemsList.style.display = totalCount === 0 ? 'none' : 'block';
 
   cart.forEach((item, index) => {
-    const row = document.createElement('div');
-    row.className = 'cart-item-row';
-   
-
-    const img = document.createElement('img');
-    img.src = item.image || 'https://via.placeholder.com/40';
-    img.alt = item.name;
-    Object.assign(img.style, {
-      width: '40px',
-      height: '40px',
-      objectFit: 'cover',
-      borderRadius: '4px',
-      marginRight: '0.75rem'
-    });
-
-    const info = document.createElement('div');
-    Object.assign(info.style, { flex: '1', minWidth: '0' });
-
-    // Текст с названием и ценой
-    const text = document.createTextNode(`${item.name} — ${item.price} ₽`);
-    info.appendChild(text);
-
-    // Блок с количеством и кнопками
-    const qtyBlock = document.createElement('div');
-    qtyBlock.style.display = 'flex';
-    qtyBlock.style.alignItems = 'center';
-    qtyBlock.style.gap = '0.5rem';
-    qtyBlock.style.marginLeft = 'auto'; // прижимаем вправо
-
-    const minusBtn = document.createElement('button');
-    minusBtn.textContent = '−';
-    minusBtn.className = 'qty-btn';
-    minusBtn.style.cssText = 'width:24px; height:24px; background:#f3f4f6; border:1px solid #e5e7eb; color:#333; border-radius:4px; cursor:pointer; font-size:1rem; line-height:1;';
-    minusBtn.addEventListener('click', () => changeQuantity(index, -1));
-
-    const qtyDisplay = document.createElement('span');
-    qtyDisplay.textContent = item.quantity || 1;
-    qtyDisplay.style.fontWeight = '600';
-
-    const plusBtn = document.createElement('button');
-
-     qtyBlock.appendChild(minusBtn);
-    qtyBlock.appendChild(qtyDisplay);
-
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'Удалить';
-    deleteBtn.className = 'delete-btn';
-    deleteBtn.addEventListener('click', () => {
-      cart.splice(index, 1);
-      saveCart();
-      updateCartUI();
-    });
-
-    
-
-    plusBtn.textContent = '+';
-    plusBtn.className = 'qty-btn';
-    plusBtn.style.cssText = 'width:24px; height:24px; background:#10b981; border:none; color:#fff; border-radius:4px; cursor:pointer; font-size:1rem; line-height:1;';
-    plusBtn.addEventListener('click', () => changeQuantity(index, +1));
-
-    qtyBlock.appendChild(minusBtn);
-    qtyBlock.appendChild(plusBtn);
-
-    row.appendChild(img);
-    row.appendChild(info);
-    row.appendChild(qtyBlock);
-    row.appendChild(deleteBtn);
-
-    itemsList.appendChild(row);
+    itemsList.appendChild(createCartRow(item, index));
   });
 }
+
+/* ============================================================
+   5. ОФОРМЛЕНИЕ ЗАКАЗА
+   ============================================================ */
 
 function handleOrderSubmit() {
   if (cart.length === 0) return;
 
-  // 1. Собираем текст заказа
   let orderText = 'Заказ из кофейни:\n';
-  cart.forEach(item => {
-    const qty = item.quantity || 1;
-    orderText += `${item.name} × ${qty} — ${item.price * qty} ₽\n`;
+  cart.forEach((item) => {
+    orderText += `${item.name} (${item.size}) × ${getQty(item)} — ${item.price * getQty(item)} ₽\n`;
   });
+  orderText += `Итого: ${getTotalPrice()} ₽`;
 
-  const totalPrice = cart.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
-  orderText += `Итого: ${totalPrice} ₽`;
-
-  // 2. Сразу пишем в поле «Сообщение»
   const messageField = document.getElementById('entry.1581823704');
-  if (messageField) {
-    messageField.value = orderText;
-  } else {
+  if (!messageField) {
     console.error('Не найдено поле entry.1581823704 — проверь ID в HTML');
-    return; // не продолжаем, если поля нет
+    return;
   }
+  messageField.value = orderText;
 
-  // 3. Очищаем корзину
-  cart = [];
-  saveCart();
-  updateCartUI();
+  clearCart();
 
+  if (cartModal) cartModal.classList.remove('open');
 
-  // 4. Закрываем модалку
-  if (cartModal) {
-    cartModal.classList.remove('open');
-  }
-
-  // 5. Прокручиваем к форме и ставим фокус на имя
   const contactsSection = document.getElementById('contacts');
-  if (contactsSection) {
-    contactsSection.scrollIntoView({ behavior: 'smooth' });
-  }
+  if (contactsSection) contactsSection.scrollIntoView({ behavior: 'smooth' });
 
   const nameField = document.getElementById('entry.1905007139');
-  if (nameField) {
-    setTimeout(() => nameField.focus(), 500);
-  }
+  if (nameField) setTimeout(() => nameField.focus(), 500);
 }
 
+/* ============================================================
+   6. МЕНЮ И ФИЛЬТРЫ
+   ============================================================ */
 
-// --- 5. Фильтры и отрисовка меню ---
-let currentFilter = 'all'; // 'all', 'hot', 'iced'
+function slug(name) {
+  return name.replace(/\s+/g, '-').toLowerCase();
+}
+
+function createCoffeeCard(coffee) {
+  const card = document.createElement('div');
+  card.className = 'coffee-card';
+
+  if (coffee.type === 'iced') {
+    const badge = document.createElement('div');
+    badge.className = 'iced-badge';
+    badge.textContent = '❄️ Холодный';
+    card.appendChild(badge);
+  }
+
+  const img = document.createElement('img');
+  img.className = 'coffee-img';
+  img.src = coffee.variants[0].image;
+  img.alt = coffee.name;
+  img.loading = 'lazy';
+  img.id = `img-${slug(coffee.name)}`;
+  card.appendChild(img);
+
+  const info = document.createElement('div');
+  info.className = 'coffee-info';
+
+  const title = document.createElement('h3');
+  title.className = 'coffee-title';
+  title.textContent = coffee.name;
+
+  const sizeSelect = document.createElement('select');
+  sizeSelect.className = 'size-select';
+  coffee.variants.forEach((v, idx) => {
+    const option = document.createElement('option');
+    option.value = idx;
+    option.textContent = `${v.size} (${v.price} ₽)`;
+    if (idx === 0) option.selected = true;
+    sizeSelect.appendChild(option);
+  });
+
+  const priceDisplay = document.createElement('span');
+  priceDisplay.className = 'price';
+  priceDisplay.textContent = `${coffee.variants[0].price} ₽`;
+
+  const addBtn = document.createElement('button');
+  addBtn.className = 'add-to-cart-btn';
+  addBtn.textContent = 'В корзину';
+  addBtn.addEventListener('click', () => {
+    const variant = coffee.variants[sizeSelect.value];
+    addToCart(coffee, variant);
+
+    card.classList.add('added-to-cart');
+    setTimeout(() => card.classList.remove('added-to-cart'), 400);
+  });
+
+  sizeSelect.addEventListener('change', () => {
+    const v = coffee.variants[sizeSelect.value];
+    const imgEl = document.getElementById(`img-${slug(coffee.name)}`);
+    if (imgEl) imgEl.src = v.image;
+    priceDisplay.textContent = `${v.price} ₽`;
+  });
+
+  info.append(title, sizeSelect, priceDisplay, addBtn);
+  card.appendChild(info);
+  return card;
+}
 
 function applyFilter() {
-  const list = document.getElementById("coffee-list");
+  const list = document.getElementById('coffee-list');
   if (!list) return;
 
   list.innerHTML = '';
-
-  const filtered = coffees.filter(coffee => {
-    if (currentFilter === 'all') return true;
-    return coffee.type === currentFilter;
-  });
-
-  filtered.forEach(coffee => {
-    const li = document.createElement("li");
-    li.style.listStyle = 'none';
-    li.style.padding = '0';
-
-
-    const card = document.createElement("div");
-    card.className = "coffee-card";
-    card.style.display = 'flex';
-    card.style.flexDirection = 'column';
-    card.style.gap = '1rem';
-    card.style.border = '1px solid #eee';
-    card.style.borderRadius = '12px';
-    card.style.padding = '1rem';
-    card.style.boxShadow = '0 2px 6px rgba(0,0,0,0.05)';
-
-      if (coffee.type === 'iced') {
-      const badge = document.createElement('div');
-      badge.className = 'iced-badge';
-      badge.textContent = '❄️ Холодный';
-      card.appendChild(badge);
-    };
-
-    // При выборе размера картинка меняется
-    const img = document.createElement("img");
-    const firstVariant = coffee.variants[0];
-    img.src = firstVariant.image || `https://via.placeholder.com/240x160?text=${encodeURIComponent(coffee.name)}`;
-    img.alt = coffee.name;
-    img.loading = "lazy";
-    img.style.width = '100%';
-    img.style.height = '180px';
-    img.style.objectFit = 'cover';
-    img.style.borderRadius = '8px';
-    // Уникальный ID для смены картинки
-    img.id = `img-${coffee.name.replace(/\s+/g, '-').toLowerCase()}`;
-
-    // Заголовок
-    const title = document.createElement("h3");
-    title.style.margin = '0.5rem 0 0';
-    title.textContent = coffee.name;
-
-    // Список размеров
-    const sizeSelect = document.createElement('select');
-    sizeSelect.style.margin = '0.5rem 0';
-    sizeSelect.style.padding = '0.4rem';
-    sizeSelect.style.border = '1px solid #ccc';
-    sizeSelect.style.borderRadius = '6px';
-
-    coffee.variants.forEach((v, idx) => {
-      const option = document.createElement('option');
-      option.value = idx; // индекс варианта
-      option.textContent = `${v.size} (${v.price} ₽)`;
-      if (idx === 0) option.selected = true;
-      sizeSelect.appendChild(option);
+  coffees
+    .filter((coffee) => currentFilter === 'all' || coffee.type === currentFilter)
+    .forEach((coffee) => {
+      const li = document.createElement('li');
+      li.appendChild(createCoffeeCard(coffee));
+      list.appendChild(li);
     });
-
-    // Цена (динамическая)
-    const priceDisplay = document.createElement('span');
-    priceDisplay.className = 'price';
-    priceDisplay.style.fontWeight = '700';
-    priceDisplay.style.color = '#10b981';
-    priceDisplay.textContent = `${firstVariant.price} ₽`;
-
-    const addBtn = document.createElement('button');
-    addBtn.textContent = 'В корзину';
-    addBtn.className = 'add-to-cart-btn';
-    addBtn.style.padding = '0.8rem 1rem';
-    addBtn.style.background = '#10b981';
-    addBtn.style.color = '#fff';
-    addBtn.style.border = 'none';
-    addBtn.style.borderRadius = '6px';
-    addBtn.style.cursor = 'pointer';
-
-    addBtn.addEventListener('click', () => {
-      const selectedIndex = sizeSelect.value;
-      const variant = coffee.variants[selectedIndex];
-
-      const existingItem = cart.find(item => item.name === coffee.name && item.size === variant.size);
-
-      if (existingItem) {
-        existingItem.quantity += 1;
-      } else {
-        cart.push({
-          name: coffee.name,
-          size: variant.size,
-          price: variant.price,
-          image: variant.image,
-          quantity: 1
-        });
-      }
-
-      saveCart();
-      updateCartUI();
-
-      // Анимация «добавлено»
-      const cardElement = addBtn.closest('.coffee-card');
-      if (cardElement) {
-        cardElement.classList.add('added-to-cart');
-        setTimeout(() => cardElement.classList.remove('added-to-cart'), 400);
-      }
-    });
-
-    // Логика смены картинки и цены при выборе размера
-    sizeSelect.addEventListener('change', () => {
-      const idx = sizeSelect.value;
-      const v = coffee.variants[idx];
-
-      const imgEl = document.getElementById(`img-${coffee.name.replace(/\s+/g, '-').toLowerCase()}`);
-      if (imgEl) {
-        imgEl.src = v.image || `https://via.placeholder.com/240x160?text=${encodeURIComponent(v.size)}`;
-      }
-      priceDisplay.textContent = `${v.price} ₽`;
-    });
-
-    const info = document.createElement('div');
-    info.className = 'coffee-info';
-    info.style.display = 'flex';
-    info.style.flexDirection = 'column';
-    info.style.gap = '0.5rem';
-
-    info.appendChild(title);
-    info.appendChild(sizeSelect);
-    info.appendChild(priceDisplay);
-    info.appendChild(addBtn);
-
-    card.appendChild(img);
-    card.appendChild(info);
-    li.appendChild(card);
-    list.appendChild(li); // ← именно li, а не addBtn!
-  });
 }
 
-// Обработка фильтров
-document.getElementById('filter-all').addEventListener('click', () => {
-  currentFilter = 'all';
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('filter-all').classList.add('active');
-  applyFilter();
+const FILTER_BUTTONS = {
+  'filter-all': 'all',
+  'filter-hot': 'hot',
+  'filter-iced': 'iced',
+};
+
+Object.entries(FILTER_BUTTONS).forEach(([btnId, filter]) => {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach((b) => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilter();
+  });
 });
 
-document.getElementById('filter-hot').addEventListener('click', () => {
-  currentFilter = 'hot';
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('filter-hot').classList.add('active');
-  applyFilter();
-});
+/* ============================================================
+   7. МОДАЛКА КОРЗИНЫ И ЗАПУСК
+   ============================================================ */
 
-document.getElementById('filter-iced').addEventListener('click', () => {
-  currentFilter = 'iced';
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('filter-iced').classList.add('active');
-  applyFilter();
-});
+let cartModal = null;
 
-// Первый запуск отрисовки
-applyFilter();
+function initCartModal() {
+  cartModal = document.getElementById('cart-modal');
+  if (!cartModal) return;
 
+  cartModal.querySelector('.close-cart-btn')
+    ?.addEventListener('click', () => cartModal.classList.remove('open'));
 
+  document.querySelector('.cart-widget button')
+    ?.addEventListener('click', () => cartModal.classList.add('open'));
 
+  document.getElementById('checkout-btn')
+    ?.addEventListener('click', handleOrderSubmit);
 
+  const clearCartBtn = document.getElementById('clear-cart-btn');
+  clearCartBtn?.addEventListener('click', () => {
+    if (cart.length === 0) return;
+    if (confirm('Вы уверены, что хотите очистить корзину?')) clearCart();
+  });
 
-// --- 7. Управление модальным окном корзины ---
-const cartModal = document.getElementById('cart-modal');
-const openCartBtn = document.querySelector('.cart-widget button');
-const checkoutBtn = document.getElementById('checkout-btn');
-if (cartModal) {
-  // Кнопка открытия
-  if (openCartBtn) {
-    openCartBtn.addEventListener('click', () => {
-      cartModal.classList.add('open');
-    });
-  }
-
-  // Крестик закрытия
-  const closeCartBtn = cartModal.querySelector('button[style*="position:absolute"]');
-  if (closeCartBtn) {
-    closeCartBtn.addEventListener('click', () => {
-      cartModal.classList.remove('open');
-    });
-  }
-
-  if (checkoutBtn) {
-    checkoutBtn.addEventListener('click', handleOrderSubmit);
-  }
-
-  // Закрытие по клику на фон
   cartModal.addEventListener('click', (e) => {
-    if (e.target === cartModal) {
-      cartModal.classList.remove('open');
-    }
+    if (e.target === cartModal) cartModal.classList.remove('open');
   });
 }
 
-const clearCartBtn = document.getElementById('clear-cart-btn');
-if (clearCartBtn) {
-  clearCartBtn.addEventListener('click', () => {
-    if (confirm('Вы уверены, что хотите очистить корзину?')) {
-      cart = [];
-      saveCart();
-      updateCartUI();
-    }
-  });
-}
+// Точка входа: один раз собираем страницу
+applyFilter();
+updateCartUI(); // корзина из localStorage появится сразу после перезагрузки
+initCartModal();
