@@ -1,0 +1,6 @@
+bin/
+*.dll
+*.sys
+*.bin
+desktop.ini
+.DS_Store
