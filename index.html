@@ -1,51 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
   <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Кофейня у окна</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
   </head>
+
   <body>
     <header class="site-header">
       <div class="container">
         <a href="#" class="logo">☕ Coffee&Joy</a>
-        
+
         <nav class="main-nav">
           <a href="#menu-section">Меню</a>
           <a href="#about-section">О нас</a>
           <a href="#contacts">Контакты</a>
         </nav>
 
-      <div class="cart-widget">
-        <span class="cart-icon">🛒</span>
-        <span id="cart-count" class="cart-count">0</span>
-        <span class="cart-total" id="cart-total">0 ₽</span>
-        <button style="border:none; background:none; color: #10b981; cursor: pointer; margin-left: 0.5rem;">👁</button>
+        <div class="cart-widget">
+          <span class="cart-icon">🛒</span>
+          <span id="cart-count" class="cart-count">0</span>
+          <span class="cart-total" id="cart-total">0 ₽</span>
+          <button class="cart-open-btn" aria-label="Открыть корзину">👁</button>
+        </div>
       </div>
-      </div>
-      
     </header>
+
     <main>
+      <section id="menu-section">
+        <h2>Наше меню</h2>
 
-      <div class="filters" style="margin-bottom:1.5rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
-        <button id="filter-all" class="filter-btn active" style="padding:0.5rem 1rem; border:1px solid #10b981; background:#fff; color:#10b981; border-radius:6px; cursor:pointer;">Все</button>
-        <button id="filter-hot" class="filter-btn" style="padding:0.5rem 1rem; border:1px solid #ddd; background:#f3f4f6; color:#333; border-radius:6px; cursor:pointer;">Горячий</button>
-        <button id="filter-iced" class="filter-btn" style="padding:0.5rem 1rem; border:1px solid #ddd; background:#f3f4f6; color:#333; border-radius:6px; cursor:pointer;">Айс</button>
-      </div>
+        <div class="filters">
+          <button id="filter-all" class="filter-btn active">Все</button>
+          <button id="filter-hot" class="filter-btn">Горячий</button>
+          <button id="filter-iced" class="filter-btn">Айс</button>
+        </div>
 
- 
-    <section id="menu-section">
-      <h2>Наше меню</h2>
-      <ul id="coffee-list"></ul>
-    </section>
+        <ul id="coffee-list"></ul>
+      </section>
 
-    <section id="about-section" class="about-hero">
-        <div class="container about-section">
+      <section id="about-section" class="about-hero">
+        <div class="container">
           <div class="about-text-block">
             <h2>О нас</h2>
             <p>«Кофейня у окна» — это место, где каждый глоток — маленькая история. Мы верим, что хороший кофе — это не про спешку, а про паузу: чтобы услышать город, заметить свет на чашке и улыбнуться себе.</p>
@@ -54,56 +54,51 @@
         </div>
       </section>
 
-     <section id="contacts">
-     <h2>Контакты</h2>
+      <section id="contacts">
+        <h2>Контакты</h2>
 
-      <div id="form-success" style="display:none; color:#10b981; font-weight:600; margin-bottom:1rem;">
-        Спасибо! Ваша заявка принята. Мы свяжемся с вами в ближайшее время.
-      </div>
+        <div id="form-success" class="form-success">
+          Спасибо! Ваша заявка принята. Мы свяжемся с вами в ближайшее время.
+        </div>
 
-           <form id="contact-form"
-            action="https://docs.google.com/forms/d/e/1FAIpQLSe_Fi3zwPCPhiqgMgcIcr83ZYZGRYTeOewE1VV_oLgozmOFSA/formResponse"
-            method="POST">
-          
+        <form id="contact-form"
+              action="https://docs.google.com/forms/d/e/1FAIpQLSe_Fi3zwPCPhiqgMgcIcr83ZYZGRYTeOewE1VV_oLgozmOFSA/formResponse"
+              method="POST">
+          <label for="entry.1905007139">Ваше имя</label>
+          <input type="text" id="entry.1905007139" name="entry.1905007139" placeholder="Иван Иванов" required>
 
-        <label for="entry.1905007139" style="display:block; margin-top:1rem; font-weight:500;">Ваше имя</label>
-        <input type="text" id="entry.1905007139" name="entry.1905007139" placeholder="Иван Иванов" required style="width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:8px; margin-top:0.25rem;">
+          <label for="entry.434212773">Email</label>
+          <input type="email" id="entry.434212773" name="entry.434212773" placeholder="ivan@example.com" required>
 
-        <label for="entry.434212773" style="display:block; margin-top:1rem; font-weight:500;">Email</label>
-        <input type="email" id="entry.434212773" name="entry.434212773" placeholder="ivan@example.com" required style="width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:8px; margin-top:0.25rem;">
+          <label for="entry.1581823704">Сообщение</label>
+          <textarea id="entry.1581823704" name="entry.1581823704" rows="4" placeholder="Расскажите, что хотите..." required></textarea>
 
-        <label for="entry.1581823704" style="display:block; margin-top:1rem; font-weight:500;">Сообщение</label>
-        <textarea id="entry.1581823704" name="entry.1581823704" rows="4" placeholder="Расскажите, что хотите..." required style="width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:8px; margin-top:0.25rem;"></textarea>
-
-        <button type="submit" style="margin-top:1.5rem; padding:0.8rem 1.5rem; background:#10b981; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600;">Отправить</button>
-      </form>
-
-    </section>
-
-
+          <button type="submit" class="submit-btn">Отправить</button>
+        </form>
+      </section>
     </main>
 
+    <aside id="cart-modal">
+      <div class="cart-modal-content">
+        <button class="close-cart-btn" aria-label="Закрыть корзину">&times;</button>
+        <h2>Ваша корзина</h2>
 
-<aside id="cart-modal">
-  <div style="background:#fff; margin:2rem; border-radius:16px; max-width:500px; width:90%; max-height:80vh; overflow-y:auto; position:relative;">
-    <button style="position:absolute; right:1rem; top:1rem; border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button>
-    <h2 style="padding:1.5rem 1.5rem 0.5rem">Ваша корзина</h2>
-    <div id="cart-items-list" style="padding:0.5rem 1.5rem;"></div>
-    <div style="padding:1rem 1.5rem;">
-      <strong style="font-size:1.25rem;">Итого: <span id="cart-total-modal">0 ₽</span></strong>
-      <button id="checkout-btn" style="margin-top:1rem; padding:0.75rem 1.5rem; background:#10b981; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600;">Оформить заказ</button>
-      <button id="clear-cart-btn" class="clear-btn">Очистить корзину</button>
-      <button class="close-cart-btn" aria-label="Закрыть корзину">✕</button>
-    </div>
-  </div>
-</aside>
- 
+        <div id="cart-items-list"></div>
+
+        <div class="cart-modal-footer">
+          <strong>Итого: <span id="cart-total-modal">0 ₽</span></strong>
+          <div class="cart-modal-actions">
+            <button id="checkout-btn">Оформить заказ</button>
+            <button id="clear-cart-btn" class="clear-btn">Очистить корзину</button>
+          </div>
+        </div>
+      </div>
+    </aside>
 
     <footer>
       <p>&copy; 2026 Кофейня у окна. Все права защищены.</p>
     </footer>
 
     <script src="script.js"></script>
-    
   </body>
 </html>

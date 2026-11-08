@@ -345,7 +345,10 @@ function initCartModal() {
   if (!cartModal) return;
 
   cartModal.querySelector('.close-cart-btn')
-    ?.addEventListener('click', () => cartModal.classList.remove('open'));
+  ?.addEventListener('click', () => cartModal.classList.remove('open'));
+
+  document.querySelector('.cart-open-btn')
+    ?.addEventListener('click', () => cartModal.classList.add('open'));
 
   document.querySelector('.cart-widget button')
     ?.addEventListener('click', () => cartModal.classList.add('open'));
