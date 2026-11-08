@@ -72,7 +72,7 @@ function changeQuantity(index, delta) {
   const item = cart[index];
   if (!item) return;
 
-  const newQty = (item.quatity || 1) + delta;
+  const newQty = (item.quantity || 1) + delta;
 
   if (newQty < 1) {
     cart.splice(index, 1);
@@ -117,7 +117,7 @@ function updateCartUI() {
   cart.forEach((item, index) => {
     const row = document.createElement('div');
     row.className = 'cart-item-row';
-
+   
 
     const img = document.createElement('img');
     img.src = item.image || 'https://via.placeholder.com/40';
@@ -158,7 +158,6 @@ function updateCartUI() {
 
      qtyBlock.appendChild(minusBtn);
     qtyBlock.appendChild(qtyDisplay);
-    qtyBlock.appendChild(plusBtn);
 
     const deleteBtn = document.createElement('button');
     deleteBtn.textContent = 'Удалить';
@@ -169,25 +168,20 @@ function updateCartUI() {
       updateCartUI();
     });
 
-    row.appendChild(img);
-    row.appendChild(info);
-    row.appendChild(qtyBlock);
-    row.appendChild(deleteBtn);
-
-    itemsList.appendChild(row);
     
+
     plusBtn.textContent = '+';
     plusBtn.className = 'qty-btn';
     plusBtn.style.cssText = 'width:24px; height:24px; background:#10b981; border:none; color:#fff; border-radius:4px; cursor:pointer; font-size:1rem; line-height:1;';
     plusBtn.addEventListener('click', () => changeQuantity(index, +1));
 
     qtyBlock.appendChild(minusBtn);
-    qtyBlock.appendChild(qtyDisplay);
     qtyBlock.appendChild(plusBtn);
 
     row.appendChild(img);
     row.appendChild(info);
     row.appendChild(qtyBlock);
+    row.appendChild(deleteBtn);
 
     itemsList.appendChild(row);
   });
@@ -195,8 +189,6 @@ function updateCartUI() {
 
 function handleOrderSubmit() {
   if (cart.length === 0) return;
-
-  const cartModal = document.getElementById('cart-modal');
 
   // 1. Собираем текст заказа
   let orderText = 'Заказ из кофейни:\n';
@@ -243,11 +235,6 @@ function handleOrderSubmit() {
 
 // --- 5. Фильтры и отрисовка меню ---
 let currentFilter = 'all'; // 'all', 'hot', 'iced'
-
-function badgeName() {
-  let badge = 'badge';
-  console.log(badge);
-}
 
 function applyFilter() {
   const list = document.getElementById("coffee-list");
@@ -453,3 +440,13 @@ if (cartModal) {
   });
 }
 
+const clearCartBtn = document.getElementById('clear-cart-btn');
+if (clearCartBtn) {
+  clearCartBtn.addEventListener('click', () => {
+    if (confirm('Вы уверены, что хотите очистить корзину?')) {
+      cart = [];
+      saveCart();
+      updateCartUI();
+    }
+  });
+}
