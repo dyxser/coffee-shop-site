@@ -5,26 +5,25 @@
   --accent: #10b981;
   --accent-dark: #059669;
   --pink: #d63384;
+
   --dark: #1f2937;
   --muted: #6b7280;
-  --danger-soft: #fee2e2;
-  --danger-border: #fca5a5; 
 
   --bg-body: #f8f9fa;
   --text-main: #333;
   --card-bg: #ffffff;
   --border-main: #eee;
+  --input-border: #ddd;
+  --control-bg: #f3f4f6;
+  --control-text: #333;
+
+  --danger-soft: #fee2e2;
+  --danger-border: #fca5a5;
+  --danger-text: #b91c1c;
 }
 
 html {
   scroll-behavior: smooth;
-}
-
-body.dark-mode {
-  --bg-body: #111827;
-  --text-main: #f3f4f6;
-  --card-bg: #1f2937;
-  --border-main: #374151;
 }
 
 body {
@@ -33,6 +32,22 @@ body {
   font-family: 'Manrope', sans-serif;
   background-color: var(--bg-body);
   color: var(--text-main);
+}
+
+body.dark-mode {
+  --bg-body: #111827;
+  --text-main: #f3f4f6;
+  --card-bg: #1f2937;
+  --border-main: #374151;
+  --input-border: #4b5563;
+  --control-bg: #374151;
+  --control-text: #e5e7eb;
+
+  --danger-soft: #7f1d1d;
+  --danger-border: #b91c1c;
+  --danger-text: #fecaca;
+
+  color-scheme: dark;
 }
 
 /* ============================================================
@@ -59,7 +74,7 @@ body {
 .logo {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-main);
   text-decoration: none;
 }
 
@@ -81,7 +96,7 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: #f3f4f6;
+  background: var(--control-bg);
   padding: 0.5rem 1rem;
   border-radius: 50px;
   cursor: pointer;
@@ -94,12 +109,39 @@ body {
 
 .cart-total {
   font-weight: 700;
-  color: #111827;
+  color: var(--text-main);
+}
+
+.cart-open-btn {
+  border: none;
+  background: none;
+  color: var(--accent);
+  cursor: pointer;
+  margin-left: 0.5rem;
+  font-size: 1rem;
+}
+
+.theme-btn {
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  margin-left: 0.5rem;
+  font-size: 1rem;
+}
+
+.theme-btn:hover {
+  color: var(--accent);
 }
 
 /* ============================================================
    4. МЕНЮ: СЕТКА И КАРТОЧКИ
    ============================================================ */
+#menu-section {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
 #coffee-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -112,9 +154,8 @@ body {
 .coffee-card {
   position: relative;
   background: var(--card-bg);
-  border: 1px solid #eee;
+  border: 1px solid var(--border-main);
   border-radius: 20px;
-  border-color: var(--border-main);
   padding: 1.5rem;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
   display: flex;
@@ -149,7 +190,7 @@ body {
 .coffee-card h3 {
   font-size: 1.25rem;
   margin: 0 0 0.5rem 0;
-  color: var(--dark);
+  color: var(--text-main);
 }
 
 .coffee-info {
@@ -162,8 +203,10 @@ body {
 .size-select {
   margin: 0.5rem 0;
   padding: 0.4rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 6px;
+  background: var(--card-bg);
+  color: var(--text-main);
 }
 
 .price {
@@ -188,11 +231,6 @@ body {
   transition: all 0.4s cubic-bezier(0.25, 1, 0.25, 1);
 }
 
-.coffee-card:hover .add-to-cart-btn {
-  transform: translateY(0);
-  opacity: 1;
-}
-
 .add-to-cart-btn:hover {
   background-color: var(--accent-dark);
 }
@@ -201,7 +239,6 @@ body {
   transform: scale(0.96);
 }
 
-/* Анимация «добавлено» */
 .added-to-cart {
   animation: pulse 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
@@ -213,12 +250,11 @@ body {
 }
 
 /* ============================================================
-   6. СПИСОК ТОВАРОВ В КОРЗИНЕ
+   6. КОРЗИНА: СПИСОК ТОВАРОВ
    ============================================================ */
 #cart-items-list {
-  max-height: 200px;
+  max-height: 240px;
   overflow-y: auto;
-  color: #333;
   padding: 0 0 1rem;
 }
 
@@ -226,9 +262,10 @@ body {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  padding: 0.6rem 0;
   margin-bottom: 0.4rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-main);
+  flex-wrap: wrap;
 }
 
 .cart-item-row:last-child {
@@ -237,15 +274,17 @@ body {
 }
 
 .cart-item-img {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: 6px;
+  flex-shrink: 0;
 }
 
 .cart-item-info {
   flex: 1;
   min-width: 0;
+  font-size: 0.95rem;
 }
 
 .qty-block {
@@ -256,25 +295,29 @@ body {
 }
 
 .qty-btn {
-  width: 24px;
-  height: 24px;
-  border: none;
-  background: #f3f4f6;
-  color: #333;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--input-border);
+  background: var(--control-bg);
+  color: var(--control-text);
   border-radius: 4px;
   cursor: pointer;
+  font-weight: 600;
   font-size: 1rem;
   line-height: 1;
   padding: 0;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .qty-btn:hover {
-  background: #e5e7eb;
+  background: var(--input-border);
+  border-color: var(--accent);
 }
 
 .qty-plus {
   background: var(--accent);
   color: #fff;
+  border-color: var(--accent);
 }
 
 .qty-plus:hover {
@@ -285,120 +328,69 @@ body {
   font-weight: 600;
 }
 
-.delete-btn {
-  padding: 0.35rem 0.7rem;
-  background: var(--danger-soft);
-  color: #b91c1c;
-  border: 1px solid var(--danger-border);
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.85rem;
-}
-
-.delete-btn:hover {
-  background: #fecaca;
-}
-
+.delete-btn,
 .clear-btn {
-  padding: 0.6rem 1rem;
-  background: var(--danger-soft);
-  color: #b91c1c;
+  padding: 0.4rem 0.8rem;
   border: 1px solid var(--danger-border);
+  background: var(--danger-soft);
+  color: var(--danger-text);
   border-radius: 6px;
   cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
+.delete-btn:hover,
 .clear-btn:hover {
-  background: #fecaca;
+  background: var(--danger-border);
+  color: #fff;
 }
 
 /* ============================================================
    7. МОДАЛКА КОРЗИНЫ
    ============================================================ */
-.cart-open-btn {
-  border: none;
-  background: none;
-  color: var(--accent);
-  cursor: pointer;
-  margin-left: 0.5rem;
-  font-size: 1rem;
-}
-
-.cart-modal-content {
-  background: #fff;
-  margin: 2rem;
-  border-radius: 16px;
-  max-width: 500px;
-  width: 90%;
-  max-width: 80vh;
-  overflow-y: auto;
-  position: relative;
-  padding: 1.5rem;
-}
-
-.cart-modal-content h2 {
-  margin: 0 0 1rem;
-}
-
-.cart-modal-footer {
-  border-top: 1px solid #eee;
-}
-
-.cart-modal-actions {
-  display: flex;
-  gap: 0.75rem;
-  margin-top: 1rem;
-  flex-wrap: wrap;
-}
-
-#checkout-btn {
-  padding: 0.75rem, 1.5rem;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-#checkout-btn:hover {
-  background: var(--accent-dark);
-}
-
-   #cart-modal {
+#cart-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.4);
   z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
   transition: opacity 0.3s ease, visibility 0.3s;
 }
 
 #cart-modal.open {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
 }
 
-#cart-modal:not(.open) {
-  pointer-events: none;
-  display: none;
-}
-
-#cart-modal > div {
+.cart-modal-content {
   transform: scale(0.95);
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   width: 94%;
   max-width: 600px;
-  background: #fff;
+  background: var(--card-bg);
+  color: var(--text-main);
+  border: 1px solid var(--border-main);
   border-radius: 20px;
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+  max-height: 80vh;
+  overflow-y: auto;
   position: relative;
+  padding: 1.5rem;
 }
 
-#cart-modal.open > div {
+#cart-modal.open .cart-modal-content {
   transform: scale(1);
+}
+
+.cart-modal-content h2 {
+  margin: 0 0 1rem;
 }
 
 .close-cart-btn {
@@ -416,7 +408,38 @@ body {
 }
 
 .close-cart-btn:hover {
-  color: var(--dark);
+  color: var(--text-main);
+}
+
+.cart-modal-footer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-main);
+}
+
+.cart-modal-footer strong {
+  font-size: 1.2rem;
+}
+
+.cart-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+#checkout-btn {
+  padding: 0.75rem 1.5rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#checkout-btn:hover {
+  background: var(--accent-dark);
 }
 
 /* ============================================================
@@ -482,18 +505,7 @@ body {
   z-index: 10;
 }
 
-.filter-btn.active {
-  background: #fff;
-  color: var(--accent);
-  border-color: var(--accent);
-}
-
-#menu-section {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.filter {
+.filters {
   margin-bottom: 1.5rem;
   display: flex;
   gap: 0.75rem;
@@ -502,35 +514,37 @@ body {
 }
 
 .filter-btn {
-  padding: 0.5rem 1rem;
-  border: 1px solid #ddd;
-  background: #f3f4f6;
-  color: #333;
-  border-radius: 6px;
+  padding: 0.55rem 1.25rem;
+  border: 1px solid transparent;
+  background: var(--control-bg);
+  color: var(--control-text);
+  border-radius: 50px;
   cursor: pointer;
   font-family: inherit;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.15s ease;
+}
+
+.filter-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.filter-btn:active {
+  transform: scale(0.96);
+}
+
+.filter-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
 }
 
 /* ============================================================
-   10. АДАПТИВ
-   ============================================================ */
-@media (max-width: 768px) {
-  .add-to-cart-btn {
-    font-size: 1.1rem !important;
-    min-height: 52px !important;
-    width: 100%;
-    border-radius: 12px !important;
-  }
-  .coffee-card {
-    padding: 1rem !important;
-  }
-  .coffee-card img {
-    height: 200px !important;
-  }
-}
-
-/* ============================================================
-   ФОРМА КОНТАКТОВ
+   10. ФОРМА КОНТАКТОВ
    ============================================================ */
 #contacts {
   max-width: 600px;
@@ -559,11 +573,13 @@ body {
 #contact-form textarea {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--input-border);
   border-radius: 8px;
   margin-top: 0.25rem;
   font-family: inherit;
   box-sizing: border-box;
+  background: var(--card-bg);
+  color: var(--text-main);
 }
 
 .submit-btn {
@@ -581,18 +597,77 @@ body {
   background: var(--accent-dark);
 }
 
-/*==========================================================================================
-  ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ
-  ==========================================================================================*/
+/* ============================================================
+   11. АДАПТИВ
+   ============================================================ */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0 1rem;
+  }
 
-.theme-btn {
-  border: none;
-  background: none;
-  color: var(--muted);
-  cursor: pointer;
-  margin-left: 0.75rem;
-  font-size: 1rem;
+  .main-nav {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .main-nav a {
+    margin-left: 0;
+    font-size: 0.95rem;
+  }
+
+  .cart-widget {
+    width: 100%;
+    justify-content: center;
+  }
+
+  #coffee-list {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+
+  .about-text-block h2 {
+    font-size: 2rem;
+  }
+
+  .cart-modal-content {
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
+  }
+
+  .cart-item-row {
+    flex-wrap: wrap;
+  }
+
+  .qty-block {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .add-to-cart-btn {
+    font-size: 1.1rem;
+    min-height: 52px;
+    width: 100%;
+    border-radius: 12px;
+  }
+
+  .coffee-card {
+    padding: 1rem;
+  }
+
+  .coffee-card img {
+    height: 200px;
+  }
 }
-.theme-btn:hover {
-  color: var(--accent);
+
+@media (max-width: 480px) {
+  .logo {
+    font-size: 1.25rem;
+  }
+
+  .main-nav a {
+    font-size: 0.9rem;
+  }
 }

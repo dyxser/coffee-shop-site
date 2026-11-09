@@ -195,23 +195,6 @@ function updateCartUI() {
 
   itemsList.innerHTML = '';
 
-  function updateCartUI() {
-  const countEl = document.getElementById('cart-count');
-  const totalEl = document.getElementById('cart-total');
-  const modalTotalEl = document.getElementById('cart-total-modal');
-  const itemsList = document.getElementById('cart-items-list');
-
-  const totalCount = getTotalCount();
-  const totalPrice = getTotalPrice();
-
-  if (countEl) countEl.textContent = totalCount;
-  if (totalEl) totalEl.textContent = `${totalPrice} ₽`;
-  if (modalTotalEl) modalTotalEl.textContent = `${totalPrice} ₽`;
-
-  if (!itemsList) return;
-
-  itemsList.innerHTML = '';
-
   // Показываем «Пусто», если корзина пуста
   if (totalCount === 0) {
     itemsList.style.display = 'flex';
@@ -228,18 +211,6 @@ function updateCartUI() {
     itemsList.appendChild(createCartRow(item, index));
   });
 }
-
-
-    cart.forEach((item, index) => {
-      itemsList.appendChild(createCartRow(item,index));
-    });
-
-  }
-
-  cart.forEach((item, index) => {
-    itemsList.appendChild(createCartRow(item, index));
-  });
-
 
 /* ============================================================
    5. ОФОРМЛЕНИЕ ЗАКАЗА
@@ -263,7 +234,7 @@ function handleOrderSubmit() {
 
   clearCart();
 
-  if (cartModal) cartModal.classList.remove('open');
+  closeCartModal;
 
   const contactsSection = document.getElementById('contacts');
   if (contactsSection) contactsSection.scrollIntoView({ behavior: 'smooth' });
@@ -272,6 +243,17 @@ function handleOrderSubmit() {
   if (nameField) setTimeout(() => nameField.focus(), 500);
 }
 
+function closeCartModal() {
+  if (!cartModal) return;
+  cartModal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function openCartModal() {
+  if (!cartModal) return;
+  cartModal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
 /* ============================================================
    6. МЕНЮ И ФИЛЬТРЫ
    ============================================================ */
@@ -385,10 +367,10 @@ function initCartModal() {
   if (!cartModal) return;
 
   cartModal.querySelector('.close-cart-btn')
-    ?.addEventListener('click', () => cartModal.classList.remove('open'));
+    ?.addEventListener('click', closeCartModal);
 
   document.querySelector('.cart-open-btn')
-    ?.addEventListener('click', () => cartModal.classList.add('open'));
+    ?.addEventListener('click', openCartModal);
 
   document.getElementById('checkout-btn')
     ?.addEventListener('click', handleOrderSubmit);
@@ -400,7 +382,7 @@ function initCartModal() {
   });
 
   cartModal.addEventListener('click', (e) => {
-    if (e.target === cartModal) cartModal.classList.remove('open');
+    if (e.target === cartModal) closeCartModal();
   });
 }
 
