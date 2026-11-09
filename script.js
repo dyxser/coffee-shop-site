@@ -194,12 +194,52 @@ function updateCartUI() {
   if (!itemsList) return;
 
   itemsList.innerHTML = '';
-  itemsList.style.display = totalCount === 0 ? 'none' : 'block';
+
+  function updateCartUI() {
+  const countEl = document.getElementById('cart-count');
+  const totalEl = document.getElementById('cart-total');
+  const modalTotalEl = document.getElementById('cart-total-modal');
+  const itemsList = document.getElementById('cart-items-list');
+
+  const totalCount = getTotalCount();
+  const totalPrice = getTotalPrice();
+
+  if (countEl) countEl.textContent = totalCount;
+  if (totalEl) totalEl.textContent = `${totalPrice} ₽`;
+  if (modalTotalEl) modalTotalEl.textContent = `${totalPrice} ₽`;
+
+  if (!itemsList) return;
+
+  itemsList.innerHTML = '';
+
+  // Показываем «Пусто», если корзина пуста
+  if (totalCount === 0) {
+    itemsList.style.display = 'flex';
+    itemsList.style.justifyContent = 'center';
+    itemsList.style.alignItems = 'center';
+    itemsList.style.padding = '2rem';
+    itemsList.textContent = 'Корзина пуста';
+    return;
+  }
+
+  itemsList.style.display = 'block';
 
   cart.forEach((item, index) => {
     itemsList.appendChild(createCartRow(item, index));
   });
 }
+
+
+    cart.forEach((item, index) => {
+      itemsList.appendChild(createCartRow(item,index));
+    });
+
+  }
+
+  cart.forEach((item, index) => {
+    itemsList.appendChild(createCartRow(item, index));
+  });
+
 
 /* ============================================================
    5. ОФОРМЛЕНИЕ ЗАКАЗА
@@ -345,12 +385,9 @@ function initCartModal() {
   if (!cartModal) return;
 
   cartModal.querySelector('.close-cart-btn')
-  ?.addEventListener('click', () => cartModal.classList.remove('open'));
+    ?.addEventListener('click', () => cartModal.classList.remove('open'));
 
   document.querySelector('.cart-open-btn')
-    ?.addEventListener('click', () => cartModal.classList.add('open'));
-
-  document.querySelector('.cart-widget button')
     ?.addEventListener('click', () => cartModal.classList.add('open'));
 
   document.getElementById('checkout-btn')
@@ -366,6 +403,25 @@ function initCartModal() {
     if (e.target === cartModal) cartModal.classList.remove('open');
   });
 }
+
+// Переключатель темы
+const themeToggle = document.getElementById('theme-toggle');
+if (themeToggle) {
+  themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('coffee-theme', isDark ? 'dark' : 'light');
+    themeToggle.textContent = isDark ? '☀️' : '🌙';
+  });
+}
+
+// Восстановление темы при загрузке
+const savedTheme = localStorage.getItem('coffee-theme');
+if (savedTheme === 'dark') {
+  document.body.classList.add('dark-mode');
+  if (themeToggle) themeToggle.textContent = '☀️';
+}
+
 
 // Точка входа: один раз собираем страницу
 applyFilter();

@@ -8,27 +8,39 @@
   --dark: #1f2937;
   --muted: #6b7280;
   --danger-soft: #fee2e2;
-  --danger-border: #fca5a5;
+  --danger-border: #fca5a5; 
+
+  --bg-body: #f8f9fa;
+  --text-main: #333;
+  --card-bg: #ffffff;
+  --border-main: #eee;
 }
 
 html {
   scroll-behavior: smooth;
 }
 
+body.dark-mode {
+  --bg-body: #111827;
+  --text-main: #f3f4f6;
+  --card-bg: #1f2937;
+  --border-main: #374151;
+}
+
 body {
   margin: 0;
   padding: 0;
   font-family: 'Manrope', sans-serif;
-  background-color: #f8f9fa;
-  color: #333;
+  background-color: var(--bg-body);
+  color: var(--text-main);
 }
 
 /* ============================================================
    2. ШАПКА САЙТА
    ============================================================ */
 .site-header {
-  background-color: #ffffff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  background-color: var(--card-bg);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -99,9 +111,10 @@ body {
 
 .coffee-card {
   position: relative;
-  background: #ffffff;
+  background: var(--card-bg);
   border: 1px solid #eee;
   border-radius: 20px;
+  border-color: var(--border-main);
   padding: 1.5rem;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
   display: flex;
@@ -566,4 +579,20 @@ body {
 
 .submit-btn:hover {
   background: var(--accent-dark);
+}
+
+/*==========================================================================================
+  ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ
+  ==========================================================================================*/
+
+.theme-btn {
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  margin-left: 0.75rem;
+  font-size: 1rem;
+}
+.theme-btn:hover {
+  color: var(--accent);
 }
