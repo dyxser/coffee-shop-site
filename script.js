@@ -227,14 +227,14 @@ function handleOrderSubmit() {
 
   const messageField = document.getElementById('entry.1581823704');
   if (!messageField) {
-    console.error('Не найдено поле entry.1581823704 — проверь ID в HTML');
+    console.error('Не найдено поле entry.1581823704 — проверь HTML');
     return;
   }
   messageField.value = orderText;
 
   clearCart();
 
-  closeCartModal;
+  closeCartModal(); // ✅ Важно: были скобки, теперь точно вызов
 
   const contactsSection = document.getElementById('contacts');
   if (contactsSection) contactsSection.scrollIntoView({ behavior: 'smooth' });
@@ -403,6 +403,83 @@ if (savedTheme === 'dark') {
   document.body.classList.add('dark-mode');
   if (themeToggle) themeToggle.textContent = '☀️';
 }
+
+function validateForm() {
+  const name = document.getElementById('entry.1905007139');
+  const email = document.getElementById('entry.434212773');
+  const message = document.getElementById('entry.1581823704');
+
+  const errorName = document.getElementById('error-name');
+  const errorEmail = document.getElementById('error-email');
+  const errorMessage = document.getElementById('error-message');
+  const submitBtn = document.querySelector('.submit-btn');
+
+  if (!name || !email || !message || !submitBtn) {
+    console.error('Ошибка: не найдены элементы формы. Проверьте HTML.');
+    return false;
+  }
+
+  let isValid = true;
+
+  [errorName, errorEmail, errorMessage].forEach(el => {
+    if (el) el.textContent = '';
+  });
+
+  const nameValue = name.value.trim();
+  if (!nameValue || nameValue.length < 2) {
+    if (errorName) errorName.textContent = 'Имя должно быть не короче 2 символов';
+    isValid = false;
+  }
+
+  const emailValue = email.value.trim();
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(emailValue)) {
+    if (errorEmail) errorEmail.textContent = 'Введите корректный email';
+    isValid = false;
+  }
+
+  const messageValue = message.value.trim();
+  if (!messageValue) {
+    if (errorMessage) errorMessage.textContent = 'Напишите сообщение';
+    isValid = false;
+  }
+
+  if (submitBtn) {
+    submitBtn.disabled = !isValid;
+  }
+
+  return isValid;
+}
+
+
+// Вешаем на форму
+const contactForm = document.getElementById('contact-form');
+if (contactForm) {
+  contactForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    console.log('Форма валидна, отправляем данные...');
+
+    // Здесь будет отправка, пока просто показываем успех
+    const successMsg = document.querySelector('.form-success');
+    if (successMsg) {
+      successMsg.style.display = 'block';
+      setTimeout(() => {
+        successMsg.style.display = 'none';
+      }, 5000);
+    }
+
+    contactForm.reset();
+    validateForm(); // сбросить ошибки
+  });
+} else {
+  console.warn('Форма #contact-form не найдена в HTML.');
+}
+
 
 
 // Точка входа: один раз собираем страницу
