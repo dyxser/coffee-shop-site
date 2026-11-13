@@ -234,7 +234,7 @@ function handleOrderSubmit() {
 
   clearCart();
 
-  closeCartModal(); // ✅ Важно: были скобки, теперь точно вызов
+  closeCartModal();
 
   const contactsSection = document.getElementById('contacts');
   if (contactsSection) contactsSection.scrollIntoView({ behavior: 'smooth' });
